@@ -3,7 +3,7 @@
 # from .serializers import *
 #
 #
-# # Класс api позволяющий просматривать и редактировать отзывы
+# 
 # class OrganizationViewSet(viewsets.ModelViewSet):
 #     queryset = Organization.objects.all()
 #     permission_classes = [
