@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 from deepface import DeepFace
-
+#
 # cap = cv2.VideoCapture(0)
 # face_cascade = cv2.CascadeClassifier()
 #
@@ -19,4 +19,5 @@ from deepface import DeepFace
 # cv2.destroyAllWindows()
 # result = DeepFace.verify(img1_path="C:/User/demon/Desktop/database/DSC_0307.jpg", img2_path="C:/User/demon/Desktop/database/DSC_0308.jpg")
 # print(result)
-#DeepFace.stream(db_path="C:/User/demon/Desktop/database ")
+
+DeepFace.stream(db_path="C:/User/demon/Desktop/database", enable_face_analysis=False)
