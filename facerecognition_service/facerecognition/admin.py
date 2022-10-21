@@ -4,3 +4,4 @@ from .models import *
 
 admin.site.register(Organization)
 admin.site.register(Worker)
+admin.site.register(Session)

@@ -9,7 +9,7 @@ class Organization(models.Model):
         verbose_name = 'Организация'
         verbose_name_plural = 'Организации'
 
-    def __index__(self):
+    def __int__(self):
         return self.id_organization
 
 
@@ -25,4 +25,16 @@ class Worker(models.Model):
 
     def __int__(self):
         return '%s %s' % (self.organization, self.id_worker)
+
+
+class Session(models.Model):
+    photo = models.ImageField("Фотография сотрудника", upload_to='images_camera/')
+
+    class Meta:
+        verbose_name = 'Фото с камеры'
+        verbose_name_plural = 'Фото с камеры'
+
+    def __int__(self):
+        return '%s' % self.photo
+
 

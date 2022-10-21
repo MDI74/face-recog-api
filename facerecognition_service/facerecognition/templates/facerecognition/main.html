@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<!--     <form method="get" enctype="multipart/form-data"> -->
+<!--         {% csrf_token %} -->
+<!--         {{ form.as_p }} -->
+<!--         <button type="submit">Загрузка</button> -->
+<!--     </form> -->
+    {% if worker %}
+        {% for el in worker %}
+            <p>{{ el.id_worker}}</p>
+            <p>{{ el.organization}}</p>
+            <p>{{ el.photo}}</p>
+        {% endfor %}
+    {% endif %}
+</body>
+</html>
