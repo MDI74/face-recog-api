@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch.dispatcher import receiver
 
 
 #Модель для организаций
@@ -27,6 +29,12 @@ class Worker(models.Model):
         return '%s %s' % (self.organization, self.id_worker)
 
 
+#Функция для удаления фото из папки вместе с удалением сотрудника из базы данных
+@receiver(pre_delete, sender=Worker)
+def worker_delete(sender, instance, **kwargs):
+    instance.photo.delete(False)
+
+
 class Session(models.Model):
     photo = models.ImageField("Фотография сотрудника", upload_to='images_camera/')
 
@@ -36,5 +44,11 @@ class Session(models.Model):
 
     def __int__(self):
         return '%s' % self.photo
+
+#Функция для удаления фото с камеры  из папки вместе с удалением сессии из базы данных
+@receiver(pre_delete, sender=Session)
+def session_delete(sender, instance, **kwargs):
+    instance.photo.delete(False)
+
 
 
