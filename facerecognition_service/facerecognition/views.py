@@ -32,7 +32,7 @@ backends = [
 
 
 #Функция для загрузки в базу данных фото с камеры
-def upload_photo(path):
+def upload_photo():
     face_cascade_db = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
     cap = cv2.VideoCapture(0)
 
@@ -62,18 +62,21 @@ def upload_photo(path):
 
 
 def home_page(request):
-    upload_photo('images/img3.jpg')
+    upload_photo()
     worker = Worker.objects.all()
     return render(request, 'facerecognition/main.html', {'worker': worker})
 
 
 #Функция для распознования лица
 def face_recognition():
+    worker = Worker
     result = DeepFace.find(img_path='detect/facedetects.jpg', db_path='images',
-                           distance_metric=metrics[2], detector_backend=backends[3], model_name=models[0])
+                           distance_metric=metrics[2], detector_backend=backends[0], model_name=models[0])
     print(result)
     try:
-        if result['identity'][0]: print("Личность найдена")
+        if result['identity'][0]:
+            res = worker.objects.filter(photo=result['identity'][0])
+            print(res[0])
     except:
         print("Личность не найдена")
     session = Session.objects.all()
