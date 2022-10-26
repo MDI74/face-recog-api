@@ -3,7 +3,6 @@ from django.forms import ModelForm
 
 
 class WorkerForm(ModelForm):
-
     class Meta:
         model = Worker
-        fields = '__all__'
+        fields = ["organization", "photo"]

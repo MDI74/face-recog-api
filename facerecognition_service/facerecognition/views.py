@@ -1,9 +1,8 @@
 from django.shortcuts import render
-from rest_framework import generics, status
+from rest_framework import generics
 from .serializers import *
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from .models import *
+from .forms import *
 import cv2
 from deepface import DeepFace
 
@@ -31,6 +30,11 @@ backends = [
 ]
 
 
+#Функция для запуска распознования лица
+def start_faceid(request):
+    upload_photo()
+
+
 #Функция для загрузки в базу данных фото с камеры
 def upload_photo():
     face_cascade_db = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
@@ -46,7 +50,7 @@ def upload_photo():
         for (x, y, w, h) in faces:
             cv2.rectangle(img_n, (x, y), (x + w, y + h), (0, 255, 0), 2)
             # cv2.imwrite('detect/facedetect.jpg', img[y:y + h, x:x + w])
-            cv2.imwrite('detect/facedetects.jpg', img)
+            cv2.imwrite('images_camera/facedetects.jpg', img)
 
         cv2.imshow('VideoCamera', img_n)
 
@@ -56,22 +60,16 @@ def upload_photo():
     cap.release()
     cv2.destroyAllWindows()
     photo = Session()
-    photo.photo = 'detect/facedetects.jpg'
+    photo.photo = 'images_camera/facedetects.jpg'
     photo.save()
     face_recognition()
-
-
-def home_page(request):
-    upload_photo()
-    worker = Worker.objects.all()
-    return render(request, 'facerecognition/main.html', {'worker': worker})
 
 
 #Функция для распознования лица
 def face_recognition():
     worker = Worker
-    result = DeepFace.find(img_path='detect/facedetects.jpg', db_path='images',
-                           distance_metric=metrics[2], detector_backend=backends[0], model_name=models[0])
+    result = DeepFace.find(img_path='images_camera/facedetects.jpg', db_path='images',
+                           distance_metric=metrics[2], detector_backend=backends[3], model_name=models[0])
     print(result)
     try:
         if result['identity'][0]:
@@ -81,6 +79,23 @@ def face_recognition():
         print("Личность не найдена")
     session = Session.objects.all()
     session.delete()
+
+
+#Функция для добавления сотрудников через форму
+def add_worker(request):
+    if request.method == 'POST':
+        form = WorkerForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            directory = "images/"
+            db = os.listdir(directory)
+            for item in db:
+                if item.endswith(".pkl"):
+                    os.remove(os.path.join(directory, item))
+    else:
+        form = WorkerForm()
+
+    return render(request, 'facerecognition/main.html', {'form': form})
 
 
 #Класс для добавления и вывода организаций в интерфейсе api
@@ -95,17 +110,7 @@ class WorkerListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = WorkerSerializer
 
 
-class CreatePhoto(APIView):
-
-    def get(self, request, format=None):
-        session = Session.objects.all()
-        serializers = SessionSerializer(session, many=True)
-        return Response(serializers.data)
-
-    def post(self, request):
-        session = Session.photo()
-        serializers = SessionSerializer(data=session)
-        if serializers.is_valid():
-            serializers.save()
-            return Response(serializers.data, status=status.HTTP_201_CREATERD)
-        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+#Класс для добавления и вывода сессии в интерфейсе api
+class CreatePhoto(generics.ListCreateAPIView):
+    queryset = Session.objects.all()
+    serializer_class = SessionSerializer
