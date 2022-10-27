@@ -52,10 +52,10 @@ class Session(models.Model):
     def __int__(self):
         return '%s' % self.photo
 
-# #Функция для удаления фото сделаного клиентом из папки вместе с удалением сессии из базы данных
-# @receiver(pre_delete, sender=Session)
-# def session_delete(sender, instance, **kwargs):
-#     instance.photo.delete(False)
+#Функция для удаления фото сделаного клиентом из папки вместе с удалением сессии из базы данных
+@receiver(pre_delete, sender=Session)
+def session_delete(sender, instance, **kwargs):
+    instance.photo.delete(False)
 
 
 

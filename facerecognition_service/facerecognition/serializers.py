@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import *
 
 
-#Класс сериализатор для преобразования полей в формат json для организаций
+#Класс сериализатор для преобразования полей в формат json для модели организаций
 class OrganizationSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -10,14 +10,14 @@ class OrganizationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-#Класс сериализатор для преобразования полей в формат json для сотрудников
+#Класс сериализатор для преобразования полей в формат json для модели сотрудников
 class WorkerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Worker
         fields = '__all__'
 
 
-#Класс сериализатор для преобразования полей в формат json для сессий
+#Класс сериализатор для преобразования полей в формат json для модели сессий
 class SessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Session

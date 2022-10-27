@@ -67,16 +67,17 @@ def upload_photo():
 
 #Функция для распознования лица
 def face_recognition():
+    model = DeepFace.build_model('VGG-Face')
     worker = Worker
     result = DeepFace.find(img_path='images_camera/facedetects.jpg', db_path='images',
-                           distance_metric=metrics[2], detector_backend=backends[3], model_name=models[0])
+                           distance_metric=metrics[2], detector_backend=backends[3],  model=model)
     print(result)
     try:
         if result['identity'][0]:
-            res = worker.objects.filter(photo=result['identity'][0])
-            print(res[0])
+            res = worker.objects.filter(photo=result['identity'][0]) #Получаем id организации и сотрудника
+            print('Найденное совпадение в базе данных', res[0])
     except:
-        print("Личность не найдена")
+        print("Личность в базе данных не найдена")
     session = Session.objects.all()
     session.delete()
 
@@ -111,6 +112,6 @@ class WorkerListCreateAPIView(generics.ListCreateAPIView):
 
 
 #Класс для добавления и вывода сессии в интерфейсе api
-class CreatePhoto(generics.ListCreateAPIView):
+class CreatePhotoListCreateAPIView(generics.ListCreateAPIView):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
