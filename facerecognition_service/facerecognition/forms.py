@@ -1,4 +1,4 @@
-from .models import Worker
+from .models import Worker, Session
 from django.forms import ModelForm
 
 
@@ -7,3 +7,10 @@ class WorkerForm(ModelForm):
     class Meta:
         model = Worker
         fields = ["organization", "photo"]
+
+
+# Класс формы для сотрудников
+class SessionForm(ModelForm):
+    class Meta:
+        model = Session
+        fields = '__all__'

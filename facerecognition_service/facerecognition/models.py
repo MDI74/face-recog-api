@@ -16,11 +16,25 @@ class Organization(models.Model):
         return str(self.id_organization)
 
 
+#Функция для загрузки фотографий в папку в зависимости от организации
+def image_upload_path(instance, filename):
+    if not instance.organization:
+        instance.save()
+    if not os.path.isdir(f'images{instance.organization}'):
+        os.mkdir(f'images{instance.organization}')
+    directory = f'images{instance.organization}'
+    db = os.listdir(directory)
+    for item in db:
+        if item.endswith(".pkl"):
+            os.remove(os.path.join(directory, item))
+    return f'images{instance.organization}/{filename}'
+
+
 #Модель для сотрудников
 class Worker(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     id_worker = models.AutoField("Номер сотрудника", primary_key=True)
-    photo = models.ImageField("Фотография сотрудника", upload_to='images/')
+    photo = models.ImageField("Фотография сотрудника", upload_to=image_upload_path)
 
     class Meta:
         verbose_name = 'Сотрудник'
@@ -34,7 +48,7 @@ class Worker(models.Model):
 @receiver(pre_delete, sender=Worker)
 def worker_delete(sender, instance, **kwargs):
     instance.photo.delete(False)
-    directory = "images/"
+    directory = f'images{instance.organization}'
     db = os.listdir(directory)
     for item in db:
         if item.endswith(".pkl"):
@@ -43,7 +57,7 @@ def worker_delete(sender, instance, **kwargs):
 
 #Модель для сессии
 class Session(models.Model):
-    photo = models.ImageField("Фотография сотрудника", upload_to='images_camera/')
+    photo = models.ImageField("Фотография сотрудника", upload_to='session_image/')
 
     class Meta:
         verbose_name = 'Фото с камеры'
@@ -51,6 +65,7 @@ class Session(models.Model):
 
     def __int__(self):
         return '%s' % self.photo
+
 
 #Функция для удаления фото сделаного клиентом из папки вместе с удалением сессии из базы данных
 @receiver(pre_delete, sender=Session)
